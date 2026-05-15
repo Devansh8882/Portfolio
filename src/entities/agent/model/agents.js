@@ -3,6 +3,10 @@
  * This file serves as the source of truth for all AI agents.
  */
 
+import luminaImg from '../../../assets/Focused Woman Working on Laptop.png';
+import aetherImg from '../../../assets/desktop computer-bro.svg';
+import nexusImg from '../../../assets/oversight-bro.svg';
+
 export const agents = [
   {
     id: "sentinel-01",
@@ -12,7 +16,7 @@ export const agents = [
     description: "Designed to handle complex system architectures with a focus on low-latency and high-scalability solutions.",
     capabilities: ["System Design", "Algorithm Optimization", "Performance Auditing"],
     status: "Active",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Aether"
+    avatar: aetherImg
   },
   {
     id: "sentinel-02",
@@ -22,7 +26,7 @@ export const agents = [
     description: "Specializes in creating immersive, high-fidelity visual experiences and fluid motion systems.",
     capabilities: ["Visual Design", "Motion Engineering", "Experience Mapping"],
     status: "Online",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Lumina"
+    avatar: luminaImg
   },
   {
     id: "sentinel-03",
@@ -32,7 +36,7 @@ export const agents = [
     description: "Bridges the gap between decentralized systems and core application logic through seamless integrations.",
     capabilities: ["API Orchestration", "Data Flow Design", "Security Protocols"],
     status: "Standby",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Nexus"
+    avatar: nexusImg
   }
 ];
 

@@ -26,3 +26,15 @@ body {
 #root {
   width: 100%;
 }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes gradient-x {
+  0%, 100% { background-size: 200% 200%; background-position: left center; }
+  50% { background-size: 200% 200%; background-position: right center; }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 15s ease infinite;
+}

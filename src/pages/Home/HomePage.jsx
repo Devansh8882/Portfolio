@@ -9,28 +9,237 @@ import {
   SoapBubble
 } from '../../shared/ui';
 import { agents } from '../../entities/agent/model/agents';
-import { projects, experience } from '../../entities/agent/model/cv_data';
+import { projects, experience, skills } from '../../entities/agent/model/cv_data';
 import videoSrc from '../../assets/Morph-Lines-To-Text.mp4';
 import heroImg from '../../assets/hero.png';
+import contactImg from '../../assets/Contact us-bro.svg';
+import processImg from '../../assets/Minimalist Work Scene.png';
+
+const ProjectCard = ({ proj, index, scrollYProgress }) => {
+  const yParallax = useTransform(scrollYProgress, [0.4, 0.8], [0, index % 2 === 0 ? -100 : 100]);
+  
+  // SCRUBBABLE X-TRANSFORMS
+  const xOffset = useTransform(
+    scrollYProgress, 
+    [0.3 + (index * 0.1), 0.5 + (index * 0.1)], 
+    [index % 2 === 0 ? -200 : 200, 0]
+  );
+  const opacity = useTransform(scrollYProgress, [0.3 + (index * 0.1), 0.4 + (index * 0.1)], [0, 1]);
+
+  return (
+    <motion.div
+      style={{ x: xOffset, opacity }}
+      className={`relative flex flex-col md:flex-row items-center gap-12 mb-40 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+    >
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#fdfaf6] border-2 border-[#8b5e34] z-10 hidden md:block shadow-[0_0_20px_rgba(139,94,52,0.3)]" />
+      <div className="w-full md:w-[45%] group">
+        <div className="relative p-12 bg-white/40 border border-[#2c1810]/5 rounded-[40px] backdrop-blur-xl hover:bg-white/80 transition-all duration-700 shadow-xl shadow-black/[0.02]">
+          <span className="text-[10px] font-mono font-bold text-[#8b5e34] mb-4 block tracking-widest">{proj.year} // {proj.company}</span>
+          <h4 className="text-4xl font-black text-[#2c1810] mb-6 uppercase tracking-tighter">{proj.title}</h4>
+          <p className="text-sm text-[#5d4037]/80 leading-relaxed mb-10 font-medium italic">{proj.description}</p>
+          <div className="flex flex-wrap gap-2 mb-10">
+            {proj.tech.map(t => (
+              <span key={t} className="px-4 py-1.5 bg-[#2c1810] text-[8px] font-black tracking-widest text-white rounded-full uppercase">{t}</span>
+            ))}
+          </div>
+          <div className="flex gap-8 border-t border-[#2c1810]/5 pt-8">
+            {proj.metrics.map(metric => (
+              <div key={metric}>
+                <span className="block text-[8px] font-mono text-[#8b5e34] uppercase mb-1">Metric_Data</span>
+                <span className="text-xs font-bold text-[#2c1810]">{metric}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <motion.div style={{ y: yParallax }} className="hidden md:block w-[45%] h-64 bg-[#f5ebe0]/30 rounded-[40px] border border-[#2c1810]/5 relative overflow-hidden group-hover:bg-[#f5ebe0]/50 transition-all duration-700">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#2c1810_1px,transparent_1px)] [background-size:15px_15px]" />
+        <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 10 + index * 2, repeat: Infinity, ease: "linear" }} className="absolute inset-0 flex items-center justify-center opacity-20">
+          <span className="text-[12vw] font-black text-[#8b5e34] uppercase leading-none select-none">0{index + 1}</span>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const AgentCard = ({ agent, index, scrollYProgress }) => {
+  const scale = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.3 + (index * 0.05)], [0.5, 1]);
+  const x = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.3 + (index * 0.05)], [200, 0]);
+  const opacity = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.2 + (index * 0.05)], [0, 1]);
+  const rotate = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.3 + (index * 0.05)], [10, 0]);
+
+  return (
+    <motion.div
+      key={agent.id}
+      style={{ scale, x, opacity, rotate }}
+      drag
+      dragConstraints={{ left: -500, right: 500, top: -200, bottom: 200 }}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      whileDrag={{ scale: 1.05, zIndex: 50 }}
+      className="snap-center shrink-0 w-[85vw] md:w-[420px] group cursor-grab active:cursor-grabbing"
+    >
+      <div className="flex items-center justify-between px-6 py-3 bg-[#2c1810] rounded-t-[20px] border-b border-white/10">
+        <div className="flex items-center gap-4">
+          <div className="flex gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-[#ff5f56]" />
+            <div className="w-2 h-2 rounded-full bg-[#ffbd2e]" />
+            <div className="w-2 h-2 rounded-full bg-[#27c93f]" />
+          </div>
+          <span className="text-[9px] font-mono text-white/40 tracking-[0.2em] uppercase">Node_ID: {agent.id.slice(0, 8)}</span>
+        </div>
+        <div className="hidden group-hover:flex items-center gap-3 font-mono text-[8px] text-[#8b5e34]">
+          <span>STATUS: {agent.status}</span>
+        </div>
+      </div>
+      <div className="relative p-8 bg-white border-x border-b border-[#2c1810]/5 rounded-b-[20px] shadow-[0_30px_60px_rgba(44,24,16,0.05)] overflow-hidden">
+        <motion.div animate={{ y: ["-100%", "300%"] }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }} className="absolute inset-x-0 h-20 bg-gradient-to-b from-transparent via-[#8b5e34]/5 to-transparent z-0 pointer-events-none" />
+        <div className="absolute top-4 left-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
+        <div className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
+        <div className="absolute bottom-4 left-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
+        <div className="absolute bottom-4 right-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
+        <div className="relative z-10">
+          <div className="flex items-start justify-between mb-8">
+            <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#f5ebe0] border border-[#2c1810]/5">
+              <img src={agent.avatar} alt={agent.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[7px] font-mono text-[#8b5e34] uppercase tracking-widest">Initialization_Vector</span>
+              <div className="w-12 h-1 bg-[#8b5e34]/10 rounded-full overflow-hidden">
+                <motion.div initial={{ width: 0 }} whileInView={{ width: "70%" }} className="h-full bg-[#8b5e34]" />
+              </div>
+            </div>
+          </div>
+          <h4 className="text-2xl font-black text-[#2c1810] mb-1 uppercase tracking-tighter">{agent.name}</h4>
+          <p className="text-[9px] font-bold text-[#8b5e34] tracking-[0.2em] uppercase mb-6 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#8b5e34]/30" />{agent.role}</p>
+          <p className="text-[13px] text-[#5d4037]/70 leading-relaxed mb-8 font-medium italic border-l-2 border-[#f5ebe0] pl-4">{agent.description}</p>
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {agent.capabilities.slice(0, 2).map(cap => (
+              <div key={cap} className="p-3 bg-[#fdfaf6] border border-[#2c1810]/5 rounded-lg">
+                <span className="block text-[7px] font-mono text-[#8b5e34] uppercase mb-1">CAPABILITY</span>
+                <span className="text-[9px] font-bold text-[#2c1810] uppercase tracking-tight">{cap}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {agent.capabilities.slice(2).map(cap => (
+              <span key={cap} className="px-3 py-1 bg-[#2c1810]/5 text-[7px] font-black tracking-widest text-[#2c1810]/40 rounded-full uppercase">{cap}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const MethodologyItem = ({ item, i, scrollYProgress }) => {
+  const scale = useTransform(scrollYProgress, [0.65 + (i * 0.02), 0.72], [0.5, 1]);
+  const yScroll = useTransform(scrollYProgress, [0.65 + (i * 0.02), 0.72], [40, 0]);
+  const opacity = useTransform(scrollYProgress, [0.65 + (i * 0.02), 0.7], [0, 1]);
+
+  return (
+    <motion.div
+      style={{ scale, y: yScroll, opacity }}
+      className="relative"
+    >
+      <motion.div
+        whileHover={{ 
+          y: -10, 
+          backgroundColor: "rgba(255, 255, 255, 0.95)", 
+          boxShadow: "0 30px 60px rgba(139, 94, 52, 0.15)" 
+        }}
+        className="p-8 border border-[#2c1810]/10 rounded-3xl bg-white/60 backdrop-blur-md transition-all duration-500 cursor-pointer"
+      >
+        <div className="flex justify-between items-start mb-6">
+          <span className="block text-[9px] font-mono font-black text-[#8b5e34] uppercase tracking-widest">{item.label}</span>
+          <span className="text-2xl filter drop-shadow-sm">{item.icon}</span>
+        </div>
+        <h5 className="text-xl font-bold text-[#2c1810] tracking-tight">{item.value}</h5>
+        <div className="mt-6 h-[2px] w-full bg-[#2c1810]/5 overflow-hidden rounded-full">
+          <motion.div 
+            initial={{ x: "-100%" }} 
+            whileInView={{ x: "100%" }} 
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }} 
+            className="h-full w-2/3 bg-gradient-to-r from-transparent via-[#8b5e34]/50 to-transparent" 
+          />
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const SkillTag = ({ skill, i, scrollYProgress }) => {
+  const scale = useTransform(scrollYProgress, [0.72 + (i * 0.01), 0.78], [0, 1]);
+  const opacity = useTransform(scrollYProgress, [0.72 + (i * 0.01), 0.75], [0, 1]);
+  const y = useTransform(scrollYProgress, [0.72 + (i * 0.01), 0.78], [20, 0]);
+
+  return (
+    <motion.span
+      style={{ scale, opacity, y }}
+      className="px-4 py-2 bg-[#2c1810]/5 text-[9px] font-black tracking-widest text-[#2c1810] rounded-full uppercase border border-[#2c1810]/10"
+    >
+      {skill}
+    </motion.span>
+  );
+};
+
+const HeroBackground = ({ scrollYProgress, heroImg }) => {
+  const y = useTransform(scrollYProgress, [0, 0.6], [20, -20]);
+  return (
+    <motion.div style={{ y }} className="absolute inset-0 z-0 opacity-20">
+      <img src={heroImg} alt="" className="w-full h-full object-cover" />
+    </motion.div>
+  );
+};
+
+const ContactSection = ({ scrollYProgress, contactImg, github, linkedin }) => {
+  const scale = useTransform(scrollYProgress, [0.9, 1], [0.8, 1]);
+  const opacity = useTransform(scrollYProgress, [0.9, 0.98], [0, 1]);
+  const y = useTransform(scrollYProgress, [0.9, 1], [100, 0]);
+
+  return (
+    <motion.div style={{ scale, opacity, y }} className="mt-32 relative">
+      <motion.div 
+        animate={{ scale: [1, 1.05, 1], opacity: [0.05, 0.12, 0.05], rotate: [0, 1, 0] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
+      >
+        <img src={contactImg} alt="" className="w-full max-w-4xl blur-[2px]" />
+      </motion.div>
+      <div className="relative z-10">
+        <div className="text-center mb-12">
+          <h5 className="text-[10px] font-mono text-[#8b5e34] uppercase tracking-[0.5em] mb-4">Transmission // Connect</h5>
+          <p className="text-sm text-[#2c1810]/40 font-medium">Interact with the bubble to initialize contact.</p>
+        </div>
+        <SoapBubble github={github} linkedin={linkedin} />
+      </div>
+    </motion.div>
+  );
+};
 
 export const HomePage = ({ loading }) => {
   const containerRef = useRef(null);
 
   // Scroll tracking for cinematic transition
-  const { scrollYProgress } = useScroll({
+  const { scrollYProgress: rawScrollY } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  // 3D FOLD TRANSFORMS (Mechanical Door Effect)
-  const leftFoldRotate = useTransform(scrollYProgress, [0, 0.7], [0, -85]);
-  const rightFoldRotate = useTransform(scrollYProgress, [0, 0.7], [0, 85]);
-  const foldOpacity = useTransform(scrollYProgress, [0.2, 0.8], [1, 0.05]);
-  const foldScale = useTransform(scrollYProgress, [0, 0.7], [1, 0.8]);
+  const scrollYProgress = useSpring(rawScrollY, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  // 3D FOLD TRANSFORMS (Mechanical Door Effect) - Accelerated
+  const leftFoldRotate = useTransform(scrollYProgress, [0, 0.35], [0, -85]);
+  const rightFoldRotate = useTransform(scrollYProgress, [0, 0.35], [0, 85]);
+  const foldOpacity = useTransform(scrollYProgress, [0.1, 0.4], [1, 0.05]);
+  const foldScale = useTransform(scrollYProgress, [0, 0.35], [1, 0.8]);
 
   // Nexus Reveal Transforms (Slower & More Majestic)
-  const nexusScale = useTransform(scrollYProgress, [0.1, 0.8], [0.6, 1.1]);
-  const nexusOpacity = useTransform(scrollYProgress, [0.1, 0.4], [0, 1]);
+  const nexusScale = useTransform(scrollYProgress, [0.05, 0.5], [0.6, 1.1]);
+  const nexusOpacity = useTransform(scrollYProgress, [0.05, 0.3], [0, 1]);
 
   // 3D Text Rotation (Slower Sync)
   const textRotateX = useTransform(scrollYProgress, [0.1, 0.8], [15, 0]);
@@ -79,7 +288,7 @@ export const HomePage = ({ loading }) => {
             </div>
             <div className="relative z-10 w-full text-left">
               <h2 className="text-[8vw] font-black leading-[0.85] tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#8b5e34] to-[#c68642]">
-                AI & WEB<br />SOLUTIONS
+                FULL STACK<br />ENGINEER
               </h2>
               <div className="mt-6 w-20 h-[2px] bg-[#8b5e34]" />
             </div>
@@ -107,13 +316,7 @@ export const HomePage = ({ loading }) => {
               }}
               className="relative p-16 md:p-24 bg-white/40 backdrop-blur-2xl border border-[#8b5e34]/10 rounded-[60px] shadow-[0_50px_100px_rgba(44,24,16,0.1)] max-w-3xl w-[90%] flex flex-col items-center text-center overflow-hidden"
             >
-              {/* Background Image with Parallax */}
-              <motion.div
-                style={{ y: useTransform(scrollYProgress, [0, 0.6], [20, -20]) }}
-                className="absolute inset-0 z-0 opacity-20"
-              >
-                <img src={heroImg} alt="" className="w-full h-full object-cover" />
-              </motion.div>
+              <HeroBackground scrollYProgress={scrollYProgress} heroImg={heroImg} />
               {/* Internal 3D Elements */}
               <div style={{ transform: "translateZ(50px)" }} className="relative z-10">
                 <motion.div
@@ -176,96 +379,12 @@ export const HomePage = ({ loading }) => {
 
           <div className="flex gap-12 px-6 md:px-[10vw] h-full items-center overflow-x-auto no-scrollbar snap-x">
             {agents.map((agent, index) => (
-              <motion.div
-                key={agent.id}
-                drag
-                dragConstraints={{ left: -500, right: 500, top: -200, bottom: 200 }}
-                dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
-                whileDrag={{ scale: 1.05, zIndex: 50 }}
-                initial={{ opacity: 0, scale: 0.9, x: index * 50 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="snap-center shrink-0 w-[85vw] md:w-[420px] group cursor-grab active:cursor-grabbing"
-              >
-                {/* Terminal Window Header */}
-                <div className="flex items-center justify-between px-6 py-3 bg-[#2c1810] rounded-t-[20px] border-b border-white/10">
-                  <div className="flex items-center gap-4">
-                    <div className="flex gap-1.5">
-                      <div className="w-2 h-2 rounded-full bg-[#ff5f56]" />
-                      <div className="w-2 h-2 rounded-full bg-[#ffbd2e]" />
-                      <div className="w-2 h-2 rounded-full bg-[#27c93f]" />
-                    </div>
-                    <span className="text-[9px] font-mono text-white/40 tracking-[0.2em] uppercase">
-                      Node_ID: {agent.id.slice(0, 8)}
-                    </span>
-                  </div>
-
-                  {/* REAL-TIME COORDINATE TRACKER (Software Vibe) */}
-                  <div className="hidden group-hover:flex items-center gap-3 font-mono text-[8px] text-[#8b5e34]">
-                    <span>STATUS: {agent.status}</span>
-                  </div>
-                </div>
-
-                {/* Mechanical Body */}
-                <div className="relative p-8 bg-white border-x border-b border-[#2c1810]/5 rounded-b-[20px] shadow-[0_30px_60px_rgba(44,24,16,0.05)] overflow-hidden">
-                  {/* Decorative Mounting Bolts */}
-                  <div className="absolute top-4 left-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
-                  <div className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
-                  <div className="absolute bottom-4 left-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
-                  <div className="absolute bottom-4 right-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
-
-                  <div className="relative z-10">
-                    <div className="flex items-start justify-between mb-8">
-                      <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#f5ebe0] border border-[#2c1810]/5">
-                        <img
-                          src={agent.avatar}
-                          alt={agent.name}
-                          className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
-                        />
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <span className="text-[7px] font-mono text-[#8b5e34] uppercase tracking-widest">Initialization_Vector</span>
-                        <div className="w-12 h-1 bg-[#8b5e34]/10 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: "70%" }}
-                            className="h-full bg-[#8b5e34]"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h4 className="text-2xl font-black text-[#2c1810] mb-1 uppercase tracking-tighter">
-                      {agent.name}
-                    </h4>
-                    <p className="text-[9px] font-bold text-[#8b5e34] tracking-[0.2em] uppercase mb-6 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#8b5e34]/30" />
-                      {agent.role}
-                    </p>
-
-                    <p className="text-[13px] text-[#5d4037]/70 leading-relaxed mb-8 font-medium italic border-l-2 border-[#f5ebe0] pl-4">
-                      {agent.description}
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-3 mb-6">
-                      {agent.capabilities.slice(0, 2).map(cap => (
-                        <div key={cap} className="p-3 bg-[#fdfaf6] border border-[#2c1810]/5 rounded-lg">
-                          <span className="block text-[7px] font-mono text-[#8b5e34] uppercase mb-1">CAPABILITY</span>
-                          <span className="text-[9px] font-bold text-[#2c1810] uppercase tracking-tight">{cap}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {agent.capabilities.slice(2).map(cap => (
-                        <span key={cap} className="px-3 py-1 bg-[#2c1810]/5 text-[7px] font-black tracking-widest text-[#2c1810]/40 rounded-full uppercase">
-                          {cap}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <AgentCard 
+                key={agent.id} 
+                agent={agent} 
+                index={index} 
+                scrollYProgress={scrollYProgress} 
+              />
             ))}
           </div>
         </div>
@@ -292,58 +411,24 @@ export const HomePage = ({ loading }) => {
             <div className="absolute left-1/2 top-0 w-[1px] h-full bg-gradient-to-b from-[#2c1810]/5 via-[#8b5e34]/20 to-[#2c1810]/5 hidden md:block" />
 
             {projects.map((proj, index) => (
-              <motion.div
-                key={proj.id}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50, rotateY: index % 2 === 0 ? 10 : -10 }}
-                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 1.2, ease: "circOut" }}
-                className={`relative flex flex-col md:flex-row items-center gap-12 mb-40 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-              >
-                {/* Visual Indicator (Node) */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#fdfaf6] border-2 border-[#8b5e34] z-10 hidden md:block shadow-[0_0_20px_rgba(139,94,52,0.3)]" />
-
-                {/* Content Panel */}
-                <div className="w-full md:w-[45%] group">
-                  <div className="relative p-12 bg-white/40 border border-[#2c1810]/5 rounded-[40px] backdrop-blur-xl hover:bg-white/80 transition-all duration-700 shadow-xl shadow-black/[0.02]">
-                    <span className="text-[10px] font-mono font-bold text-[#8b5e34] mb-4 block tracking-widest">{proj.year} // {proj.company}</span>
-                    <h4 className="text-4xl font-black text-[#2c1810] mb-6 uppercase tracking-tighter">{proj.title}</h4>
-                    <p className="text-sm text-[#5d4037]/80 leading-relaxed mb-10 font-medium italic">
-                      {proj.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2 mb-10">
-                      {proj.tech.map(t => (
-                        <span key={t} className="px-4 py-1.5 bg-[#2c1810] text-[8px] font-black tracking-widest text-white rounded-full uppercase">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex gap-8 border-t border-[#2c1810]/5 pt-8">
-                      {proj.metrics.map(metric => (
-                        <div key={metric}>
-                          <span className="block text-[8px] font-mono text-[#8b5e34] uppercase mb-1">Metric_Data</span>
-                          <span className="text-xs font-bold text-[#2c1810]">{metric}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Visual Depth Decoration */}
-                <div className="hidden md:block w-[45%] h-64 bg-[#f5ebe0]/30 rounded-[40px] border border-[#2c1810]/5 relative overflow-hidden group-hover:bg-[#f5ebe0]/50 transition-all duration-700">
-                  <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#2c1810_1px,transparent_1px)] [background-size:15px_15px]" />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                    <span className="text-[12vw] font-black text-[#8b5e34] uppercase leading-none select-none">0{index + 1}</span>
-                  </div>
-                </div>
-              </motion.div>
+              <ProjectCard 
+                key={proj.id} 
+                proj={proj} 
+                index={index} 
+                scrollYProgress={scrollYProgress} 
+              />
             ))}
           </div>
 
           {/* Final Professional Experience Summary */}
-          <div className="mt-32 p-12 bg-[#2c1810] rounded-[60px] text-[#fdfaf6] overflow-hidden relative">
+          <motion.div 
+            style={{ 
+              scale: useTransform(scrollYProgress, [0.55, 0.7], [0.8, 1]),
+              y: useTransform(scrollYProgress, [0.55, 0.7], [100, 0]),
+              opacity: useTransform(scrollYProgress, [0.55, 0.65], [0, 1])
+            }}
+            className="mt-32 p-12 bg-[#2c1810] rounded-[60px] text-[#fdfaf6] overflow-hidden relative"
+          >
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#8b5e34]/20 blur-[100px] -translate-y-1/2 translate-x-1/2" />
             <div className="relative z-10 max-w-4xl">
               <h4 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-12 leading-none">
@@ -359,33 +444,97 @@ export const HomePage = ({ loading }) => {
                 ))}
               </div>
             </div>
-          </div>
-
-          {/* SOAP BUBBLE CONTACT TERMINAL */}
-          <div className="mt-32">
-            <div className="text-center mb-12">
-              <h5 className="text-[10px] font-mono text-[#8b5e34] uppercase tracking-[0.5em] mb-4">Transmission // Connect</h5>
-              <p className="text-sm text-[#2c1810]/40 font-medium">Interact with the liquid interface to initialize contact.</p>
-            </div>
-            <SoapBubble
-              github="https://github.com"
-              linkedin="https://linkedin.com"
-            />
-          </div>
+          </motion.div>
         </div>
       </section>
+          
+          {/* 4. PROFESSIONAL METHODOLOGY: THE BLUEPRINT */}
+          <section className="mt-40 relative px-6 max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-20">
+              <motion.div 
+                style={{ 
+                  x: useTransform(scrollYProgress, [0.7, 0.85], [-200, 0]),
+                  opacity: useTransform(scrollYProgress, [0.7, 0.8], [0, 1])
+                }}
+                className="w-full md:w-1/2"
+              >
+                <motion.div 
+                  whileHover={{ scale: 1.02, rotate: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative group cursor-none"
+                >
+                  <div className="absolute -inset-4 bg-gradient-to-r from-[#8b5e34]/20 to-transparent blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+                  <motion.img 
+                    animate={{ 
+                      y: [0, -10, 0],
+                    }}
+                    transition={{ 
+                      duration: 6, 
+                      repeat: Infinity, 
+                      ease: "easeInOut" 
+                    }}
+                    src={processImg} 
+                    alt="Work Process" 
+                    className="relative w-full rounded-[40px] shadow-2xl transition-all duration-700" 
+                  />
+                </motion.div>
+              </motion.div>
 
-      <style jsx>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        @keyframes gradient-x {
-          0%, 100% { background-size: 200% 200%; background-position: left center; }
-          50% { background-size: 200% 200%; background-position: right center; }
-        }
-        .animate-gradient-x {
-          animation: gradient-x 15s ease infinite;
-        }
-      `}</style>
+              <motion.div 
+                style={{ 
+                  x: useTransform(scrollYProgress, [0.7, 0.85], [200, 0]),
+                  opacity: useTransform(scrollYProgress, [0.7, 0.8], [0, 1])
+                }}
+                className="w-full md:w-1/2"
+              >
+                <span className="text-[10px] font-mono tracking-[1em] text-[#8b5e34] uppercase font-bold mb-6 block">
+                  Workflow // Synergy
+                </span>
+                <h3 className="text-5xl md:text-7xl font-black text-[#2c1810] tracking-tighter uppercase mb-8 leading-none">
+                  Precision <br /> <span className="text-[#8b5e34]">Methodology</span>
+                </h3>
+                <p className="text-lg text-[#5d4037]/70 leading-relaxed mb-10 font-medium italic">
+                  I believe in a synthesis of design intuition and engineering precision. Every pixel is calculated, and every interaction is intentional.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {[
+                    { label: "Analyze", value: "Neural Mapping", icon: "🧠" },
+                    { label: "Design", value: "Visual Synthesis", icon: "🎨" },
+                    { label: "Code", value: "Logic Flow", icon: "💻" },
+                    { label: "Deploy", value: "Global Reach", icon: "🚀" }
+                  ].map((item, i) => (
+                    <MethodologyItem 
+                      key={i} 
+                      item={item} 
+                      i={i} 
+                      scrollYProgress={scrollYProgress} 
+                    />
+                  ))}
+                </div>
+
+                {/* Skill Arsenal Tag Cloud */}
+                <div className="mt-12 flex flex-wrap gap-2">
+                  {skills.map((skill, i) => (
+                    <SkillTag 
+                      key={skill} 
+                      skill={skill} 
+                      i={i} 
+                      scrollYProgress={scrollYProgress} 
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+
+          {/* SOAP BUBBLE CONTACT TERMINAL */}
+          <ContactSection 
+            scrollYProgress={scrollYProgress} 
+            contactImg={contactImg} 
+            github="https://github.com/Devansh8882" 
+            linkedin="https://www.linkedin.com/in/devansh-mishra-dm0020/" 
+          />
+
     </div>
   );
 };
