@@ -6,3 +6,4 @@ export * from './GrainOverlay/GrainOverlay.jsx';
 export * from './ScrollIndicator/ScrollIndicator.jsx';
 export * from './Bubble/SoapBubble.jsx';
 export * from './Cursor/CustomCursor.jsx';
+export * from './Navbar/Navbar.jsx';

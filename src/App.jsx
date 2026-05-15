@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Preloader, CustomCursor } from './shared/ui';
+import { Preloader, CustomCursor, Navbar } from './shared/ui';
 import { HomePage } from './pages/Home/HomePage.jsx';
 import './index.css';
 
@@ -20,6 +20,7 @@ function App() {
         {loading && <Preloader key="preloader" />}
       </AnimatePresence>
       <CustomCursor />
+      {!loading && <Navbar />}
       <HomePage loading={loading} />
     </>
   );

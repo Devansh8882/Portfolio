@@ -16,7 +16,13 @@ export const agents = [
     description: "Designed to handle complex system architectures with a focus on low-latency and high-scalability solutions.",
     capabilities: ["System Design", "Algorithm Optimization", "Performance Auditing"],
     status: "Active",
-    avatar: aetherImg
+    avatar: aetherImg,
+    icon: "🏗️",
+    stats: {
+      "Processing": "98%",
+      "Efficiency": "High",
+      "Sync": "Live"
+    }
   },
   {
     id: "sentinel-02",
@@ -26,7 +32,13 @@ export const agents = [
     description: "Specializes in creating immersive, high-fidelity visual experiences and fluid motion systems.",
     capabilities: ["Visual Design", "Motion Engineering", "Experience Mapping"],
     status: "Online",
-    avatar: luminaImg
+    avatar: luminaImg,
+    icon: "✨",
+    stats: {
+      "Render": "120fps",
+      "Fidelity": "Ultra",
+      "Sync": "Active"
+    }
   },
   {
     id: "sentinel-03",
@@ -36,7 +48,13 @@ export const agents = [
     description: "Bridges the gap between decentralized systems and core application logic through seamless integrations.",
     capabilities: ["API Orchestration", "Data Flow Design", "Security Protocols"],
     status: "Standby",
-    avatar: nexusImg
+    avatar: nexusImg,
+    icon: "🔗",
+    stats: {
+      "Bridges": "42",
+      "Latency": "2ms",
+      "Sync": "Idle"
+    }
   }
 ];
 
