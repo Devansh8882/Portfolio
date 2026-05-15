@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Preloader } from './shared/ui';
+import { Preloader, CustomCursor } from './shared/ui';
 import { HomePage } from './pages/Home/HomePage.jsx';
+import './index.css';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,7 @@ function App() {
       <AnimatePresence mode="wait">
         {loading && <Preloader key="preloader" />}
       </AnimatePresence>
-      
+      <CustomCursor />
       <HomePage loading={loading} />
     </>
   );

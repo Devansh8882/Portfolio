@@ -17,10 +17,13 @@
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  cursor: none !important;
+}
+
+a, button, input, textarea, select, [role="button"], .cursor-pointer {
+  cursor: none !important;
 }
 
 #root {

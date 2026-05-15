@@ -14,9 +14,11 @@ import videoSrc from '../../assets/Morph-Lines-To-Text.mp4';
 import heroImg from '../../assets/hero.png';
 import contactImg from '../../assets/Contact us-bro.svg';
 import processImg from '../../assets/Minimalist Work Scene.png';
+import { useTilt } from '../../shared/hooks/useTilt';
 
 const ProjectCard = ({ proj, index, scrollYProgress }) => {
   const yParallax = useTransform(scrollYProgress, [0.4, 0.8], [0, index % 2 === 0 ? -100 : 100]);
+  const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt(10);
   
   // SCRUBBABLE X-TRANSFORMS
   const xOffset = useTransform(
@@ -31,9 +33,14 @@ const ProjectCard = ({ proj, index, scrollYProgress }) => {
       style={{ x: xOffset, opacity }}
       className={`relative flex flex-col md:flex-row items-center gap-12 mb-40 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
     >
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#fdfaf6] border-2 border-[#8b5e34] z-10 hidden md:block shadow-[0_0_20px_rgba(139,94,52,0.3)]" />
-      <div className="w-full md:w-[45%] group">
-        <div className="relative p-12 bg-white/40 border border-[#2c1810]/5 rounded-[40px] backdrop-blur-xl hover:bg-white/80 transition-all duration-700 shadow-xl shadow-black/[0.02]">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#fdfaf6] border-2 border-[#8b5e34] z-10 hidden md:block" />
+      <div className="w-full md:w-[45%] group perspective-[1000px]">
+        <motion.div 
+          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+          onMouseMove={onMouseMove}
+          onMouseLeave={onMouseLeave}
+          className="relative p-12 bg-white/40 border border-[#2c1810]/5 rounded-[40px] backdrop-blur-xl hover:bg-white/80 transition-colors duration-700 cursor-pointer"
+        >
           <span className="text-[10px] font-mono font-bold text-[#8b5e34] mb-4 block tracking-widest">{proj.year} // {proj.company}</span>
           <h4 className="text-4xl font-black text-[#2c1810] mb-6 uppercase tracking-tighter">{proj.title}</h4>
           <p className="text-sm text-[#5d4037]/80 leading-relaxed mb-10 font-medium italic">{proj.description}</p>
@@ -50,7 +57,7 @@ const ProjectCard = ({ proj, index, scrollYProgress }) => {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
       <motion.div style={{ y: yParallax }} className="hidden md:block w-[45%] h-64 bg-[#f5ebe0]/30 rounded-[40px] border border-[#2c1810]/5 relative overflow-hidden group-hover:bg-[#f5ebe0]/50 transition-all duration-700">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#2c1810_1px,transparent_1px)] [background-size:15px_15px]" />
@@ -62,16 +69,28 @@ const ProjectCard = ({ proj, index, scrollYProgress }) => {
   );
 };
 
-const AgentCard = ({ agent, index, scrollYProgress }) => {
-  const scale = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.3 + (index * 0.05)], [0.5, 1]);
-  const x = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.3 + (index * 0.05)], [200, 0]);
-  const opacity = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.2 + (index * 0.05)], [0, 1]);
-  const rotate = useTransform(scrollYProgress, [0.1 + (index * 0.05), 0.3 + (index * 0.05)], [10, 0]);
+const AgentCard = ({ agent, index }) => {
+  const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt(15);
 
   return (
     <motion.div
       key={agent.id}
-      style={{ scale, x, opacity, rotate }}
+      initial={{ scale: 0.5, x: 200, opacity: 0, rotate: 10 }}
+      whileInView={{ 
+        scale: 1, 
+        x: 0, 
+        opacity: 1, 
+        rotate: 0,
+        transition: { 
+          duration: 0.8, 
+          delay: index * 0.1,
+          ease: [0.16, 1, 0.3, 1] 
+        }
+      }}
+      viewport={{ once: true, margin: "-100px" }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       drag
       dragConstraints={{ left: -500, right: 500, top: -200, bottom: 200 }}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
@@ -91,7 +110,7 @@ const AgentCard = ({ agent, index, scrollYProgress }) => {
           <span>STATUS: {agent.status}</span>
         </div>
       </div>
-      <div className="relative p-8 bg-white border-x border-b border-[#2c1810]/5 rounded-b-[20px] shadow-[0_30px_60px_rgba(44,24,16,0.05)] overflow-hidden">
+      <div className="relative p-8 bg-white border-x border-b border-[#2c1810]/10 rounded-b-[20px] overflow-hidden">
         <motion.div animate={{ y: ["-100%", "300%"] }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }} className="absolute inset-x-0 h-20 bg-gradient-to-b from-transparent via-[#8b5e34]/5 to-transparent z-0 pointer-events-none" />
         <div className="absolute top-4 left-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
         <div className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-[#2c1810]/10 border border-[#2c1810]/20" />
@@ -131,27 +150,39 @@ const AgentCard = ({ agent, index, scrollYProgress }) => {
   );
 };
 
-const MethodologyItem = ({ item, i, scrollYProgress }) => {
-  const scale = useTransform(scrollYProgress, [0.65 + (i * 0.02), 0.72], [0.5, 1]);
-  const yScroll = useTransform(scrollYProgress, [0.65 + (i * 0.02), 0.72], [40, 0]);
-  const opacity = useTransform(scrollYProgress, [0.65 + (i * 0.02), 0.7], [0, 1]);
+const MethodologyItem = ({ item, i }) => {
+  const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt(15);
 
   return (
     <motion.div
-      style={{ scale, y: yScroll, opacity }}
+      initial={{ scale: 0.5, y: 40, opacity: 0 }}
+      whileInView={{ 
+        scale: 1, 
+        y: 0, 
+        opacity: 1,
+        transition: { 
+          duration: 0.6, 
+          delay: i * 0.05,
+          ease: "easeOut"
+        }
+      }}
+      viewport={{ once: true, margin: "-50px" }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       className="relative"
     >
       <motion.div
         whileHover={{ 
           y: -10, 
-          backgroundColor: "rgba(255, 255, 255, 0.95)", 
-          boxShadow: "0 30px 60px rgba(139, 94, 52, 0.15)" 
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
+          borderColor: "rgba(139, 94, 52, 0.3)" 
         }}
         className="p-8 border border-[#2c1810]/10 rounded-3xl bg-white/60 backdrop-blur-md transition-all duration-500 cursor-pointer"
       >
         <div className="flex justify-between items-start mb-6">
           <span className="block text-[9px] font-mono font-black text-[#8b5e34] uppercase tracking-widest">{item.label}</span>
-          <span className="text-2xl filter drop-shadow-sm">{item.icon}</span>
+          <span className="text-2xl">{item.icon}</span>
         </div>
         <h5 className="text-xl font-bold text-[#2c1810] tracking-tight">{item.value}</h5>
         <div className="mt-6 h-[2px] w-full bg-[#2c1810]/5 overflow-hidden rounded-full">
@@ -167,14 +198,21 @@ const MethodologyItem = ({ item, i, scrollYProgress }) => {
   );
 };
 
-const SkillTag = ({ skill, i, scrollYProgress }) => {
-  const scale = useTransform(scrollYProgress, [0.72 + (i * 0.01), 0.78], [0, 1]);
-  const opacity = useTransform(scrollYProgress, [0.72 + (i * 0.01), 0.75], [0, 1]);
-  const y = useTransform(scrollYProgress, [0.72 + (i * 0.01), 0.78], [20, 0]);
-
+const SkillTag = ({ skill, i }) => {
   return (
     <motion.span
-      style={{ scale, opacity, y }}
+      initial={{ scale: 0, opacity: 0, y: 20 }}
+      whileInView={{ 
+        scale: 1, 
+        opacity: 1, 
+        y: 0,
+        transition: { 
+          duration: 0.4, 
+          delay: i * 0.02,
+          ease: "easeOut"
+        }
+      }}
+      viewport={{ once: true }}
       className="px-4 py-2 bg-[#2c1810]/5 text-[9px] font-black tracking-widest text-[#2c1810] rounded-full uppercase border border-[#2c1810]/10"
     >
       {skill}
@@ -191,13 +229,22 @@ const HeroBackground = ({ scrollYProgress, heroImg }) => {
   );
 };
 
-const ContactSection = ({ scrollYProgress, contactImg, github, linkedin }) => {
-  const scale = useTransform(scrollYProgress, [0.9, 1], [0.8, 1]);
-  const opacity = useTransform(scrollYProgress, [0.9, 0.98], [0, 1]);
-  const y = useTransform(scrollYProgress, [0.9, 1], [100, 0]);
-
+const ContactSection = ({ contactImg, github, linkedin }) => {
   return (
-    <motion.div style={{ scale, opacity, y }} className="mt-32 relative">
+    <motion.div
+      initial={{ scale: 0.8, opacity: 0, y: 100 }}
+      whileInView={{ 
+        scale: 1, 
+        opacity: 1, 
+        y: 0,
+        transition: { 
+          duration: 0.8,
+          ease: [0.16, 1, 0.3, 1]
+        }
+      }}
+      viewport={{ once: true, margin: "-100px" }}
+      className="mt-32 relative"
+    >
       <motion.div 
         animate={{ scale: [1, 1.05, 1], opacity: [0.05, 0.12, 0.05], rotate: [0, 1, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
@@ -248,6 +295,32 @@ export const HomePage = ({ loading }) => {
 
   return (
     <div ref={containerRef} className="relative bg-[#fdfaf6] font-sans text-[#2c1810] perspective-[2000px]">
+      
+      {/* 🧭 SECTION PROGRESS NAVIGATOR */}
+      <div className="fixed left-8 top-1/2 -translate-y-1/2 z-[100] hidden lg:flex flex-col gap-8 items-center">
+        <div className="h-32 w-[1px] bg-[#2c1810]/5 relative overflow-hidden rounded-full">
+          <motion.div 
+            style={{ scaleY: scrollYProgress, transformOrigin: "top" }}
+            className="absolute inset-0 bg-[#8b5e34]" 
+          />
+        </div>
+        <div className="flex flex-col gap-4">
+          {['Hero', 'Nexus', 'Matrix', 'Method', 'Connect'].map((label, idx) => (
+            <div key={label} className="group relative flex items-center">
+              <motion.div 
+                animate={{ 
+                  scale: scrollYProgress.get() > (idx * 0.2) ? 1.5 : 1,
+                  backgroundColor: scrollYProgress.get() > (idx * 0.2) ? "#8b5e34" : "rgba(44,24,16,0.1)"
+                }}
+                className="w-1.5 h-1.5 rounded-full transition-colors" 
+              />
+              <span className="absolute left-6 text-[8px] font-mono font-black text-[#8b5e34] opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest pointer-events-none">
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
       {/* 1. HERO SECTION (STICKY FOLDING SYSTEM) */}
       <section className="relative h-[500vh]">
         <div className="sticky top-0 h-screen w-full flex overflow-hidden">
@@ -314,7 +387,7 @@ export const HomePage = ({ loading }) => {
                 translateZ: textZ,
                 transformStyle: "preserve-3d"
               }}
-              className="relative p-16 md:p-24 bg-white/40 backdrop-blur-2xl border border-[#8b5e34]/10 rounded-[60px] shadow-[0_50px_100px_rgba(44,24,16,0.1)] max-w-3xl w-[90%] flex flex-col items-center text-center overflow-hidden"
+              className="relative p-16 md:p-24 bg-white/40 backdrop-blur-2xl border border-[#8b5e34]/10 rounded-[60px] max-w-3xl w-[90%] flex flex-col items-center text-center overflow-hidden"
             >
               <HeroBackground scrollYProgress={scrollYProgress} heroImg={heroImg} />
               {/* Internal 3D Elements */}
@@ -322,7 +395,7 @@ export const HomePage = ({ loading }) => {
                 <motion.div
                   animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 3, repeat: Infinity }}
-                  className="w-4 h-4 rounded-full bg-[#8b5e34] mb-12 mx-auto shadow-[0_0_30px_#8b5e34]"
+                  className="w-4 h-4 rounded-full bg-[#8b5e34] mb-12 mx-auto"
                 />
 
                 <span className="text-[12px] font-mono text-[#8b5e34] uppercase tracking-[0.6em] mb-6 block font-bold">
@@ -334,12 +407,16 @@ export const HomePage = ({ loading }) => {
                 </h3>
 
                 <div className="flex gap-6 justify-center">
-                  <div className="px-6 py-3 bg-[#2c1810] text-[#fdfaf6] text-[10px] font-mono uppercase tracking-widest rounded-xl shadow-xl">
-                    User_Verified
-                  </div>
-                  <div className="px-6 py-3 border-2 border-[#8b5e34]/20 text-[#8b5e34] text-[10px] font-mono uppercase tracking-widest rounded-xl">
-                    Access_Granted
-                  </div>
+                  <MagneticButton>
+                    <div className="px-6 py-3 bg-[#2c1810] text-[#fdfaf6] text-[10px] font-mono uppercase tracking-widest rounded-xl">
+                      User_Verified
+                    </div>
+                  </MagneticButton>
+                  <MagneticButton>
+                    <div className="px-6 py-3 border-2 border-[#8b5e34]/20 text-[#8b5e34] text-[10px] font-mono uppercase tracking-widest rounded-xl">
+                      Access_Granted
+                    </div>
+                  </MagneticButton>
                 </div>
               </div>
 
@@ -383,7 +460,6 @@ export const HomePage = ({ loading }) => {
                 key={agent.id} 
                 agent={agent} 
                 index={index} 
-                scrollYProgress={scrollYProgress} 
               />
             ))}
           </div>
@@ -475,7 +551,7 @@ export const HomePage = ({ loading }) => {
                     }}
                     src={processImg} 
                     alt="Work Process" 
-                    className="relative w-full rounded-[40px] shadow-2xl transition-all duration-700" 
+                    className="relative w-full rounded-[40px] transition-all duration-700" 
                   />
                 </motion.div>
               </motion.div>
@@ -507,7 +583,6 @@ export const HomePage = ({ loading }) => {
                       key={i} 
                       item={item} 
                       i={i} 
-                      scrollYProgress={scrollYProgress} 
                     />
                   ))}
                 </div>
@@ -518,8 +593,7 @@ export const HomePage = ({ loading }) => {
                     <SkillTag 
                       key={skill} 
                       skill={skill} 
-                      i={i} 
-                      scrollYProgress={scrollYProgress} 
+                      i={i}
                     />
                   ))}
                 </div>
@@ -529,7 +603,6 @@ export const HomePage = ({ loading }) => {
 
           {/* SOAP BUBBLE CONTACT TERMINAL */}
           <ContactSection 
-            scrollYProgress={scrollYProgress} 
             contactImg={contactImg} 
             github="https://github.com/Devansh8882" 
             linkedin="https://www.linkedin.com/in/devansh-mishra-dm0020/" 

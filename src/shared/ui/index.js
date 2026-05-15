@@ -5,3 +5,4 @@ export * from './Background3D/Background3D.jsx';
 export * from './GrainOverlay/GrainOverlay.jsx';
 export * from './ScrollIndicator/ScrollIndicator.jsx';
 export * from './Bubble/SoapBubble.jsx';
+export * from './Cursor/CustomCursor.jsx';
