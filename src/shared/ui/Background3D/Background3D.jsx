@@ -6,7 +6,7 @@ import * as THREE from 'three';
 function NeuralNetwork() {
   const pointsRef = useRef();
   
-  const count = 80;
+  const count = 100; // Increased density slightly for richer cyberpunk look
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -43,10 +43,10 @@ function NeuralNetwork() {
     }
     
     pointsRef.current.geometry.attributes.position.needsUpdate = true;
-    pointsRef.current.rotation.y += 0.001;
+    pointsRef.current.rotation.y += 0.0008;
 
-    const targetX = state.mouse.x * 0.2;
-    const targetY = state.mouse.y * 0.2;
+    const targetX = state.mouse.x * 0.25;
+    const targetY = state.mouse.y * 0.25;
     pointsRef.current.position.x += (targetX - pointsRef.current.position.x) * 0.05;
     pointsRef.current.position.y += (targetY - pointsRef.current.position.y) * 0.05;
   });
@@ -56,12 +56,12 @@ function NeuralNetwork() {
       <Points ref={pointsRef} positions={positions} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
-          color="#8d7b68" // Warm Medium Brown
-          size={0.15}
+          color="#00f5ff" // Electric Cyber Cyan
+          size={0.16}
           sizeAttenuation={true}
           depthWrite={false}
-          blending={THREE.NormalBlending} // Changed to normal for better visibility on light bg
-          opacity={0.6}
+          blending={THREE.AdditiveBlending} // High-fidelity futuristic glow on dark background
+          opacity={0.8}
         />
       </Points>
     </group>
@@ -73,7 +73,7 @@ export const Background3D = () => {
 
   return (
     <div 
-      className="absolute inset-0 z-0 bg-gradient-to-b from-[#f5ebe0] via-[#d5bdaf] to-[#a98467]"
+      className="absolute inset-0 z-0 bg-gradient-to-b from-[#030209] via-[#09081a] to-[#04040a]"
       style={{ cursor: isGrabbing ? 'grabbing' : 'grab' }}
     >
       <Canvas 
@@ -82,7 +82,7 @@ export const Background3D = () => {
         onPointerUp={() => setIsGrabbing(false)}
         onPointerLeave={() => setIsGrabbing(false)}
       >
-        <fog attach="fog" args={['#f5ebe0', 5, 20]} />
+        <fog attach="fog" args={['#030209', 5, 22]} />
         <NeuralNetwork />
         
         <OrbitControls 
@@ -95,13 +95,14 @@ export const Background3D = () => {
           minPolarAngle={Math.PI / 3}
         />
 
-        <ambientLight intensity={0.8} />
-        <pointLight position={[10, -5, 10]} intensity={1} color="#d5bdaf" />
-        <pointLight position={[-10, 5, -10]} intensity={0.5} color="#8d7b68" />
+        <ambientLight intensity={0.4} />
+        {/* Futuristic dual neon point lights */}
+        <pointLight position={[10, -5, 10]} intensity={2.5} color="#00f5ff" /> {/* Cyan */}
+        <pointLight position={[-10, 5, -10]} intensity={2.0} color="#bd5cff" /> {/* Purple */}
       </Canvas>
 
-      {/* Soft Warm Glows */}
-      <div className="absolute inset-0 bg-white/5 pointer-events-none" />
+      {/* Cybernetic Glass Gradients overlay */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#bd5cff]/5 to-transparent pointer-events-none" />
     </div>
   );
 };

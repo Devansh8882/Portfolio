@@ -12,9 +12,9 @@ export const ScrollIndicator = ({ visible = true }) => {
       <motion.div
         animate={{ y: [0, 15, 0] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        className="w-[1px] h-20 bg-gradient-to-b from-[#2c1810] to-transparent"
+        className="w-[1px] h-20 bg-gradient-to-b from-[#00f5ff] to-transparent shadow-[0_0_8px_#00f5ff]"
       />
-      <span className="text-[10px] font-mono tracking-[0.8em] uppercase text-[#2c1810]/40">Pulse</span>
+      <span className="text-[10px] font-mono tracking-[0.8em] uppercase text-[#00f5ff]/40">Pulse</span>
     </motion.div>
   );
 };

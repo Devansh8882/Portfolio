@@ -63,10 +63,10 @@ export const CustomCursor = () => {
         <motion.div
           animate={{
             scale: isHovered ? 2.5 : (isClicked ? 0.8 : 1),
-            backgroundColor: isHovered ? "rgba(139, 94, 52, 0.15)" : "rgba(139, 94, 52, 0.05)",
-            borderColor: isHovered ? "rgba(139, 94, 52, 0.4)" : "rgba(139, 94, 52, 0.15)",
+            backgroundColor: isHovered ? "rgba(0, 245, 255, 0.15)" : "rgba(189, 92, 255, 0.05)",
+            borderColor: isHovered ? "rgba(0, 245, 255, 0.5)" : "rgba(189, 92, 255, 0.2)",
           }}
-          className="w-10 h-10 rounded-full border-2"
+          className="w-10 h-10 rounded-full border-2 transition-colors duration-200"
         />
       </motion.div>
 
@@ -84,9 +84,9 @@ export const CustomCursor = () => {
         <motion.div
           animate={{
             scale: isHovered ? 0.4 : (isClicked ? 1.5 : 1),
-            backgroundColor: isHovered ? "#2c1810" : "#8b5e34",
+            backgroundColor: isHovered ? "#bd5cff" : "#00f5ff",
           }}
-          className="w-2.5 h-2.5 rounded-full transition-colors duration-200"
+          className="w-2.5 h-2.5 rounded-full transition-colors duration-200 shadow-[0_0_8px_currentColor]"
         />
       </motion.div>
     </>
