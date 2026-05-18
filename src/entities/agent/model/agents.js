@@ -9,50 +9,50 @@ import nexusImg from '../../../assets/oversight-bro.svg';
 
 export const agents = [
   {
-    id: "sentinel-01",
-    name: "Aether",
-    role: "Core Architect Agent",
-    specialization: "Structural Engineering & Performance Optimization",
-    description: "Designed to handle complex system architectures with a focus on low-latency and high-scalability solutions.",
-    capabilities: ["System Design", "Algorithm Optimization", "Performance Auditing"],
+    id: "avenger-01",
+    name: "J.A.R.V.I.S.",
+    role: "Core Architect UI/UX",
+    specialization: "Just A Rather Very Intelligent System",
+    description: "Designed to handle complex system architectures, manage Tony Stark's armor, and optimize frontend infrastructure.",
+    capabilities: ["System Design", "Algorithm Optimization", "Suit Protocols"],
     status: "Active",
     avatar: aetherImg,
-    icon: "🏗️",
+    icon: "🤖",
     stats: {
-      "Processing": "98%",
+      "Processing": "99.9%",
       "Efficiency": "High",
       "Sync": "Live"
     }
   },
   {
-    id: "sentinel-02",
-    name: "Lumina",
+    id: "avenger-02",
+    name: "F.R.I.D.A.Y.",
     role: "Visual Intelligence Agent",
     specialization: "UI/UX Synthesis & Motion Design",
-    description: "Specializes in creating immersive, high-fidelity visual experiences and fluid motion systems.",
+    description: "Specializes in creating immersive, high-fidelity visual experiences and analyzing combat/code patterns on the fly.",
     capabilities: ["Visual Design", "Motion Engineering", "Experience Mapping"],
     status: "Online",
     avatar: luminaImg,
-    icon: "✨",
+    icon: "⚡",
     stats: {
-      "Render": "120fps",
+      "Render": "144fps",
       "Fidelity": "Ultra",
       "Sync": "Active"
     }
   },
   {
-    id: "sentinel-03",
-    name: "Nexus",
-    role: "Integration Specialist Agent",
-    specialization: "API Connectivity & Neural Bridges",
-    description: "Bridges the gap between decentralized systems and core application logic through seamless integrations.",
-    capabilities: ["API Orchestration", "Data Flow Design", "Security Protocols"],
+    id: "avenger-03",
+    name: "E.D.I.T.H.",
+    role: "Integration Specialist",
+    specialization: "Even Dead, I'm The Hero",
+    description: "Provides tactical global satellite intelligence, backend API routing, and seamless third-party service integration.",
+    capabilities: ["API Orchestration", "Global Security", "Data Flow"],
     status: "Standby",
     avatar: nexusImg,
-    icon: "🔗",
+    icon: "🕶️",
     stats: {
-      "Bridges": "42",
-      "Latency": "2ms",
+      "Satellites": "Active",
+      "Latency": "1ms",
       "Sync": "Idle"
     }
   }

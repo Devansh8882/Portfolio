@@ -21,8 +21,8 @@ export default {
           950: '#082f49', // Deepest Navy
         },
         cyber: {
-          cyan: '#06b6d4',
-          violet: '#8b5cf6',
+          cyan: '#e23636', // Spider-Red replaces Cyan
+          violet: '#00f0ff', // Stark-Blue replaces Violet
           mint: '#10b981',
           rose: '#f43f5e',
           gold: '#f59e0b',

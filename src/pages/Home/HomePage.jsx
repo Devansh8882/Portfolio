@@ -9,9 +9,116 @@ import {
 import { agents } from '../../entities/agent/model/agents';
 import { projects, experience, skills } from '../../entities/agent/model/cv_data';
 import heroImg from '../../assets/hero.png';
-import contactImg from '../../assets/Contact us-bro.svg';
 import processImg from '../../assets/Minimalist Work Scene.png';
 import { useTilt } from '../../shared/hooks/useTilt';
+import { useMotionValue } from 'framer-motion';
+
+const InteractiveSpiderSense = () => {
+  const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const containerRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!isHovered || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const currentNoX = rect.width / 2 + 60 + noPosition.x; 
+    const currentNoY = 80 + noPosition.y; 
+
+    const distX = mouseX - currentNoX;
+    const distY = mouseY - currentNoY;
+    const distance = Math.sqrt(distX * distX + distY * distY);
+
+    if (distance < 120) {
+      // "Spider-Sense" dodge mechanism
+      const angle = Math.atan2(distY, distX);
+      const escapeDistance = 150 - distance;
+      setNoPosition({
+        x: noPosition.x - Math.cos(angle) * escapeDistance,
+        y: noPosition.y - Math.sin(angle) * escapeDistance,
+      });
+    }
+  };
+
+  return (
+    <section 
+      ref={containerRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      className="relative py-32 px-6 flex flex-col items-center justify-center overflow-hidden border-y border-white/5 bg-background-surface/20"
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(226,54,54,0.05)_0%,transparent_50%)]" />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="relative z-10 w-full max-w-4xl"
+      >
+        <h3 className="text-4xl md:text-6xl font-black text-white mb-16 uppercase tracking-tighter text-center">
+          Are you a <span className="text-cyber-cyan">Marvel</span> fan?
+        </h3>
+        <div className="relative flex items-center justify-center w-full h-[160px]">
+          <div className="absolute left-1/2 -translate-x-[120px] top-1/2 -translate-y-1/2">
+            <MagneticButton>
+              <button onClick={() => alert('Welcome to the Spider-Verse!')} className="px-10 py-5 bg-cyber-cyan text-black font-black uppercase tracking-widest rounded-full hover:scale-110 transition-transform shadow-[0_0_30px_rgba(226,54,54,0.4)]">
+                I am Iron Man
+              </button>
+            </MagneticButton>
+          </div>
+          
+          <motion.div
+            animate={{ x: noPosition.x, y: noPosition.y }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="absolute left-1/2 translate-x-[60px] top-1/2 -translate-y-1/2 z-20"
+          >
+            <button className="px-10 py-5 bg-white/5 backdrop-blur-md text-white/50 font-black uppercase tracking-widest rounded-full border border-white/10 hover:bg-cyber-violet/20 hover:text-cyber-violet hover:border-cyber-violet/50 transition-colors pointer-events-none md:pointer-events-auto">
+              DC is Better
+            </button>
+          </motion.div>
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+const RevolvingArcReactorCard = ({ image }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [-200, 200], [60, -60]);
+  const rotateY = useTransform(x, [-200, 200], [-60, 60]);
+
+  return (
+    <div className="relative w-full aspect-square perspective-[2000px] cursor-grab active:cursor-grabbing group">
+      <div className="absolute -inset-10 bg-cyber-cyan/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-100 transition-opacity" />
+      <motion.div
+        drag
+        dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+        dragElastic={0.6}
+        whileTap={{ scale: 0.95 }}
+        style={{ x, y, rotateX, rotateY, transformStyle: "preserve-3d" }}
+        className="w-full h-full relative"
+      >
+        <img 
+          src={image} 
+          alt="Arc Reactor Interactive Element" 
+          className="w-full h-full object-cover rounded-[40px] border border-white/10 shadow-[0_0_50px_rgba(226,54,54,0.15)] pointer-events-none"
+        />
+        <div 
+          style={{ transform: "translateZ(50px)" }} 
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        >
+          <span className="px-6 py-2 bg-black/50 backdrop-blur-md border border-white/20 text-white font-mono text-[10px] uppercase tracking-widest rounded-full">
+            Drag to Rotate 360°
+          </span>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 const ProjectCard = ({ proj, index, scrollYProgress }) => {
   const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt(10);
@@ -25,7 +132,7 @@ const ProjectCard = ({ proj, index, scrollYProgress }) => {
       className={`relative flex flex-col md:flex-row items-center gap-12 mb-40 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
     >
       <div className="w-full md:w-[50%] group perspective-[1000px]">
-        <motion.div 
+        <motion.div
           style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
@@ -33,12 +140,12 @@ const ProjectCard = ({ proj, index, scrollYProgress }) => {
         >
           {/* Internal Glow */}
           <div className="absolute -inset-1 bg-gradient-to-r from-cyber-cyan/0 via-cyber-cyan/5 to-cyber-cyan/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          
+
           <div className="relative z-10">
             <span className="text-[10px] font-mono font-bold text-cyber-cyan mb-4 block tracking-[0.3em] uppercase">{proj.year} // {proj.company}</span>
             <h4 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tighter">{proj.title}</h4>
             <p className="text-sm text-white/50 leading-relaxed mb-10 font-medium">{proj.description}</p>
-            
+
             <div className="flex flex-wrap gap-2 mb-10">
               {proj.tech.map(t => (
                 <span key={t} className="px-4 py-1.5 bg-white/5 text-[8px] font-black tracking-widest text-white/70 rounded-full uppercase border border-white/10">{t}</span>
@@ -83,7 +190,7 @@ const AgentCard = ({ agent, index }) => {
     >
       <div className="relative p-8 bg-background-surface border border-white/5 rounded-[32px] overflow-hidden group-hover:border-cyber-violet/30 transition-colors duration-500">
         <div className="absolute top-0 right-0 w-32 h-32 bg-cyber-violet/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        
+
         <div className="flex items-center gap-4 mb-8">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyber-violet to-cyber-cyan flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(139,92,246,0.3)]">
             {agent.icon || "🤖"}
@@ -95,7 +202,7 @@ const AgentCard = ({ agent, index }) => {
         </div>
 
         <p className="text-sm text-white/60 leading-relaxed mb-8">{agent.description}</p>
-        
+
         <div className="grid grid-cols-2 gap-4">
           {agent.stats && Object.entries(agent.stats).map(([label, val]) => (
             <div key={label} className="p-3 bg-white/5 rounded-xl border border-white/5">
@@ -132,14 +239,14 @@ const HeroSection = ({ scrollYProgress }) => {
       <div className="absolute inset-0 z-0">
         <Background3D />
       </div>
-      
-      <motion.div 
+
+      <motion.div
         style={{ y, opacity }}
         className="relative z-10 w-full max-w-7xl px-6 flex flex-col items-center"
       >
         <div className="relative group text-center">
           <div className="absolute -inset-20 bg-gradient-to-r from-cyber-cyan/10 via-cyber-violet/10 to-cyber-cyan/10 blur-[120px] opacity-50" />
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -147,26 +254,26 @@ const HeroSection = ({ scrollYProgress }) => {
             className="relative"
           >
             <div className="flex items-center justify-center gap-3 mb-8">
-              <div className="w-2 h-2 rounded-full bg-cyber-cyan animate-pulse shadow-[0_0_10px_#06b6d4]" />
-              <span className="text-[10px] font-mono text-cyber-cyan uppercase tracking-[0.5em] font-bold">System_Online // Protocol_Nexus</span>
+              <div className="w-2 h-2 rounded-full bg-cyber-cyan animate-pulse shadow-[0_0_10px_#e23636]" />
+              <span className="text-[10px] font-mono text-cyber-cyan uppercase tracking-[0.5em] font-bold">Stark_Tech // E.D.I.T.H. Online</span>
             </div>
-            
-            <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white mb-8 leading-[0.8] uppercase">
-              The <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-cyber-violet to-cyber-cyan bg-[length:200%_auto] animate-gradient-x">Artifact</span>
+
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-8 leading-[0.8] uppercase">
+              Friendly Neighborhood <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-cyber-violet to-cyber-cyan bg-[length:200%_auto] animate-gradient-x">Software Engineer</span>
             </h1>
-            
+
             <p className="max-w-xl mx-auto text-white/40 text-sm md:text-base font-medium mb-12">
-              Engineering high-fidelity digital experiences where <span className="text-white">logic</span> meets <span className="text-white">kinetic art</span>.
+              With great power comes great <span className="text-white">code quality</span>. I build immersive, interactive experiences for the multiverse.
             </p>
 
             <div className="flex flex-wrap justify-center gap-6">
               <MagneticButton>
-                <div className="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform">
-                  Initiate_Sequence
+                <div className="px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform cursor-pointer">
+                  Swing Into Action
                 </div>
               </MagneticButton>
               <div className="px-10 py-4 border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-white/5 transition-colors cursor-pointer">
-                Access_Archive
+                View My Suits
               </div>
             </div>
           </motion.div>
@@ -188,7 +295,7 @@ export const HomePage = () => {
   return (
     <main ref={containerRef} className="bg-background-dark text-white selection:bg-cyber-cyan/30 selection:text-cyber-cyan">
       <GrainOverlay />
-      
+
       <HeroSection scrollYProgress={scrollYProgress} />
 
       {/* Projects */}
@@ -210,10 +317,10 @@ export const HomePage = () => {
       {/* Agents */}
       <section className="relative py-40 bg-background-surface/30">
         <div className="max-w-7xl mx-auto px-6 mb-24">
-          <span className="text-[10px] font-mono font-bold text-cyber-violet uppercase tracking-[0.5em] mb-4 block">Core_Nodes</span>
+          <span className="text-[10px] font-mono font-bold text-cyber-violet uppercase tracking-[0.5em] mb-4 block">Avengers_Initiative</span>
           <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase">The Network</h2>
         </div>
-        
+
         <div className="flex gap-8 overflow-x-auto pb-20 px-6 no-scrollbar snap-x">
           {agents.map((agent, i) => (
             <AgentCard key={agent.id} agent={agent} index={i} />
@@ -221,17 +328,14 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* Methodology */}
+      {/* Methodology with 3D Revolving Element */}
       <section className="py-40 px-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-20 items-center">
           <div className="w-full md:w-1/2">
-            <div className="relative group">
-              <div className="absolute -inset-4 bg-cyber-cyan/10 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity" />
-              <img src={processImg} className="relative rounded-[40px] border border-white/5" alt="Process" />
-            </div>
+            <RevolvingArcReactorCard image={processImg} />
           </div>
           <div className="w-full md:w-1/2">
-            <span className="text-[10px] font-mono font-bold text-cyber-cyan uppercase tracking-[0.5em] mb-4 block">Workflow</span>
+            <span className="text-[10px] font-mono font-bold text-cyber-cyan uppercase tracking-[0.5em] mb-4 block">Stark_Workflow</span>
             <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-8">Digital <br /> Logic</h2>
             <div className="grid grid-cols-2 gap-6">
               {[
@@ -246,6 +350,9 @@ export const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Interactive Spider-Sense Section */}
+      <InteractiveSpiderSense />
 
       {/* Footer / Contact */}
       <section className="py-40 px-6 text-center bg-background-dark relative overflow-hidden">

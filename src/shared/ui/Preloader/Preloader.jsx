@@ -55,7 +55,7 @@ export const Preloader = ({ onComplete }) => {
           transition={{ duration: 1, delay: 1.8 }}
           className="mt-8 text-[10px] font-mono tracking-[0.8em] text-cyber-cyan uppercase font-bold text-center"
         >
-          Protocol_Nexus // Loading_Assets
+          Stark_Industries // Loading_Suits
         </motion.div>
       </div>
     </motion.div>
